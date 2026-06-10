@@ -9,7 +9,7 @@ const app = express();
 
 app.use(cors());
 app.use(express.json({ limit: "10mb" }));
-
+app.use(express.static(__dirname));
 const DB_CONFIG = process.env.DATABASE_URL
   ? {
       connectionString: process.env.DATABASE_URL,
@@ -128,7 +128,7 @@ function authMiddleware(req, res, next) {
 }
 
 app.get("/", (req, res) => {
-  res.send("API Descarte Certo funcionando!");
+  res.sendFile(__dirname + "/index.html");
 });
 
 app.get("/api/health", async (req, res) => {
