@@ -15,6 +15,9 @@ const DB_CONFIG = {
   port: Number(process.env.DB_PORT || 5432),
   user: process.env.DB_USER || "postgres",
   password: process.env.DB_PASSWORD || "1983",
+  ssl: process.env.DB_HOST === "localhost" ? false : {
+    rejectUnauthorized: false
+  }
 };
 
 const DB_NAME = process.env.DB_NAME || "descarte_certo_novo";
