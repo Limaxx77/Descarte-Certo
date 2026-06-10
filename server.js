@@ -10,16 +10,20 @@ const app = express();
 app.use(cors());
 app.use(express.json({ limit: "10mb" }));
 
-const DB_CONFIG = {
-  host: process.env.DB_HOST || "localhost",
-  port: Number(process.env.DB_PORT || 5432),
-  user: process.env.DB_USER || "postgres",
-  password: process.env.DB_PASSWORD || "1983",
-  ssl: process.env.DB_HOST === "localhost" ? false : {
-    rejectUnauthorized: false
-  }
-};
-
+const DB_CONFIG = process.env.DATABASE_URL
+  ? {
+      connectionString: process.env.DATABASE_URL,
+      ssl: {
+        rejectUnauthorized: false,
+      },
+    }
+  : {
+      host: process.env.DB_HOST || "localhost",
+      port: Number(process.env.DB_PORT || 5432),
+      user: process.env.DB_USER || "postgres",
+      password: process.env.DB_PASSWORD || "1983",
+      database: process.env.DB_NAME || "descarte_certo_novo",
+    };
 const DB_NAME = process.env.DB_NAME || "descarte_certo_novo";
 const JWT_SECRET = process.env.JWT_SECRET || "descarte_certo_secreto";
 const PORT = Number(process.env.PORT || 3000);
@@ -92,14 +96,13 @@ async function ensureDatabase() {
 async function initDatabase() {
   await ensureDatabase();
 
-  db = new Pool({ ...DB_CONFIG, database: DB_NAME });
+  db = new Pool(DB_CONFIG);
 
   await db.query("SELECT 1");
   console.log("PostgreSQL conectado!");
 
   await db.query(schemaSql);
 
-  // Migrações simples para bancos que já existiam com outro formato
   await db.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS phone VARCHAR(20);`);
   await db.query(`ALTER TABLE products ADD COLUMN IF NOT EXISTS unit VARCHAR(30) DEFAULT 'kg';`);
   await db.query(`ALTER TABLE products ADD COLUMN IF NOT EXISTS image_url TEXT;`);
