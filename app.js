@@ -3,7 +3,7 @@
 // Apenas dados reais via PostgreSQL/API
 // ===========================
 
-const API_URL = "http://127.0.0.1:3000";
+const API_URL = "https://descartecertoreciclagem.onrender.com";
 
 const CATEGORIES = [
   { value: "papelao", label: "Papelão", emoji: "📦" },
