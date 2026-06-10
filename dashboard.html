@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard — Descarte Certo</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<div class="app-layout">
+<aside class="sidebar" id="app-sidebar">
+  <div class="sidebar-header"><div class="sidebar-logo">Descarte<span>Certo</span></div></div>
+  <div class="sidebar-user">
+    <div class="sidebar-avatar" id="sidebar-avatar">U</div>
+    <div class="sidebar-user-info">
+      <div class="name" id="sidebar-user-name">Usuário</div>
+      <div class="role" id="sidebar-user-role">Membro</div>
+    </div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-group-label">Principal</div>
+    <a href="dashboard.html" class="nav-item active" data-page="dashboard.html"><span class="icon">🏠</span> Dashboard</a>
+<a href="marketplace.html" class="nav-item " data-page="marketplace.html"><span class="icon">🛒</span> Marketplace</a>
+<a href="cadastrar-produto.html" class="nav-item " data-page="cadastrar-produto.html"><span class="icon">➕</span> Cadastrar Produto</a>
+<a href="mapa.html" class="nav-item " data-page="mapa.html"><span class="icon">🗺️</span> Pontos de Coleta</a>
+<a href="conta.html" class="nav-item " data-page="conta.html"><span class="icon">👤</span> Minha Conta</a>
+  </nav>
+  <div class="sidebar-footer">
+    <button class="btn btn-ghost w-full logout-btn" style="justify-content:flex-start;gap:10px;color:var(--gray-400)">🚪 Sair da conta</button>
+  </div>
+</aside>
+<div class="overlay" id="sidebar-overlay"></div>
+<main class="main-content">
+<div class="top-bar">
+  <div style="display:flex;align-items:center;gap:16px">
+    <button class="mobile-menu-btn" id="sidebar-toggle"><span></span><span></span><span></span></button>
+    <h2 style="font-size:1.1rem;font-weight:700">Dashboard</h2>
+  </div>
+  <div class="top-bar-right"><a href="cadastrar-produto.html" class="btn btn-primary btn-sm">+ Cadastrar produto</a></div>
+</div>
+  <div class="page-content">
+    <div class="page-header">
+      <h1>Bem-vindo ao Descarte Certo</h1>
+      <p>Gerencie seus anúncios reais e encontre compradores pelo WhatsApp.</p>
+    </div>
+
+    <div class="dashboard-cards grid-3">
+      <div class="stat-card"><div class="icon">🛒</div><h3 id="total-products">0</h3><p>Produtos no marketplace</p></div>
+      <div class="stat-card"><div class="icon">📍</div><h3 id="total-points">0</h3><p>Pontos de coleta cadastrados</p></div>
+      <div class="stat-card"><div class="icon">💬</div><h3>WhatsApp</h3><p>Contato direto com vendedores</p></div>
+    </div>
+
+    <div class="card mt-24">
+      <div class="card-body">
+        <h3>Atalhos rápidos</h3>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:16px">
+          <a class="btn btn-primary" href="cadastrar-produto.html">Cadastrar produto</a>
+          <a class="btn btn-secondary" href="marketplace.html">Ver marketplace</a>
+          <a class="btn btn-secondary" href="mapa.html">Pontos de coleta</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+</div>
+
+<script src="app.js"></script>
+<script>
+  DC.initSidebar();
+
+  async function loadDashboard() {
+    try {
+      const products = await DC.loadProducts();
+      const points = await DC.loadCollectionPoints();
+      document.getElementById("total-products").textContent = products.length;
+      document.getElementById("total-points").textContent = points.length;
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  loadDashboard();
+</script>
+</body>
+</html>

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cadastrar Produto — Descarte Certo</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<div class="app-layout">
+<aside class="sidebar" id="app-sidebar">
+  <div class="sidebar-header"><div class="sidebar-logo">Descarte<span>Certo</span></div></div>
+  <div class="sidebar-user">
+    <div class="sidebar-avatar" id="sidebar-avatar">U</div>
+    <div class="sidebar-user-info">
+      <div class="name" id="sidebar-user-name">Usuário</div>
+      <div class="role" id="sidebar-user-role">Membro</div>
+    </div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-group-label">Principal</div>
+    <a href="dashboard.html" class="nav-item " data-page="dashboard.html"><span class="icon">🏠</span> Dashboard</a>
+<a href="marketplace.html" class="nav-item " data-page="marketplace.html"><span class="icon">🛒</span> Marketplace</a>
+<a href="cadastrar-produto.html" class="nav-item active" data-page="cadastrar-produto.html"><span class="icon">➕</span> Cadastrar Produto</a>
+<a href="mapa.html" class="nav-item " data-page="mapa.html"><span class="icon">🗺️</span> Pontos de Coleta</a>
+<a href="conta.html" class="nav-item " data-page="conta.html"><span class="icon">👤</span> Minha Conta</a>
+  </nav>
+  <div class="sidebar-footer">
+    <button class="btn btn-ghost w-full logout-btn" style="justify-content:flex-start;gap:10px;color:var(--gray-400)">🚪 Sair da conta</button>
+  </div>
+</aside>
+<div class="overlay" id="sidebar-overlay"></div>
+<main class="main-content">
+<div class="top-bar">
+  <div style="display:flex;align-items:center;gap:16px">
+    <button class="mobile-menu-btn" id="sidebar-toggle"><span></span><span></span><span></span></button>
+    <h2 style="font-size:1.1rem;font-weight:700">Cadastrar Produto</h2>
+  </div>
+  <div class="top-bar-right"><a href="marketplace.html" class="btn btn-secondary btn-sm">Ver marketplace</a></div>
+</div>
+  <div class="page-content">
+    <div class="page-header">
+      <h1>Cadastrar Material Reciclável</h1>
+      <p>Seu anúncio será salvo no PostgreSQL e exibido no marketplace.</p>
+    </div>
+
+    <div class="form-page">
+      <div id="product-error" class="form-error" style="display:none"></div>
+
+      <form id="product-form" onsubmit="return false">
+        <div class="form-section-title">📋 Informações básicas</div>
+
+        <div class="form-group">
+          <label class="form-label">Nome do produto *</label>
+          <input type="text" id="f-name" class="form-control" placeholder="Ex: Papelão limpo prensado" required />
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Categoria *</label>
+            <select id="f-category" class="form-control" required>
+              <option value="">Selecione</option>
+              <option value="papelao">📦 Papelão</option>
+              <option value="aluminio">🥤 Alumínio</option>
+              <option value="plastico">♻️ Plástico</option>
+              <option value="vidro">🍶 Vidro</option>
+              <option value="ferro">⚙️ Ferro</option>
+              <option value="cobre">🔌 Cobre</option>
+              <option value="oleo">🛢️ Óleo Usado</option>
+              <option value="eletronico">💻 Eletrônicos</option>
+              <option value="outro">📋 Outro</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Cidade / Bairro *</label>
+            <input type="text" id="f-city" class="form-control" placeholder="Ex: Cuiabá - Centro" required />
+          </div>
+        </div>
+
+        <div class="form-section-title mt-16">💰 Quantidade e preço</div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Quantidade disponível *</label>
+            <input type="number" id="f-qty" class="form-control" placeholder="Ex: 500" min="0.1" step="0.1" required />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Unidade *</label>
+            <select id="f-unit" class="form-control" required>
+              <option value="kg">kg</option>
+              <option value="ton">toneladas</option>
+              <option value="litros">litros</option>
+              <option value="unidades">unidades</option>
+              <option value="fardos">fardos</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Preço por unidade (R$) *</label>
+          <input type="number" id="f-price" class="form-control" placeholder="0.00" min="0" step="0.01" required />
+        </div>
+
+        <div class="form-section-title mt-16">📝 Descrição e imagem</div>
+
+        <div class="form-group">
+          <label class="form-label">Descrição</label>
+          <textarea id="f-desc" class="form-control" placeholder="Descreva o material, condição e detalhes importantes"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">URL da imagem</label>
+          <input type="url" id="f-image" class="form-control" placeholder="https://exemplo.com/imagem.jpg" />
+        </div>
+
+        <div style="display:flex;gap:16px;margin-top:32px;flex-wrap:wrap">
+          <button type="button" class="btn btn-primary btn-lg" onclick="submitProduct()" id="submit-btn">✅ Publicar no Marketplace</button>
+          <button type="button" class="btn btn-secondary btn-lg" onclick="resetForm()">🔄 Limpar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</main>
+</div>
+
+<script src="app.js"></script>
+<script>
+  DC.initSidebar();
+
+  async function submitProduct() {
+    const name = document.getElementById("f-name").value.trim();
+    const category = document.getElementById("f-category").value;
+    const city = document.getElementById("f-city").value.trim();
+    const qty = document.getElementById("f-qty").value;
+    const unit = document.getElementById("f-unit").value;
+    const price = document.getElementById("f-price").value;
+    const description = document.getElementById("f-desc").value.trim();
+    const image = document.getElementById("f-image").value.trim();
+    const errorEl = document.getElementById("product-error");
+
+    errorEl.style.display = "none";
+
+    if (!name || !category || !city || !qty || !price) {
+      errorEl.textContent = "Preencha todos os campos obrigatórios.";
+      errorEl.style.display = "block";
+      return;
+    }
+
+    const btn = document.getElementById("submit-btn");
+    btn.disabled = true;
+    btn.textContent = "Publicando...";
+
+    try {
+      await DC.createProduct({
+        name,
+        category,
+        qty,
+        unit,
+        price,
+        city,
+        description,
+        image
+      });
+
+      DC.showToast("Produto cadastrado com sucesso!");
+      window.location.href = "marketplace.html";
+    } catch (err) {
+      errorEl.textContent = err.message;
+      errorEl.style.display = "block";
+      btn.disabled = false;
+      btn.textContent = "✅ Publicar no Marketplace";
+    }
+  }
+
+  function resetForm() {
+    document.getElementById("product-form").reset();
+  }
+</script>
+</body>
+</html>

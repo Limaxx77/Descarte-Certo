@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pontos de Coleta — Descarte Certo</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<div class="app-layout">
+<aside class="sidebar" id="app-sidebar">
+  <div class="sidebar-header"><div class="sidebar-logo">Descarte<span>Certo</span></div></div>
+  <div class="sidebar-user">
+    <div class="sidebar-avatar" id="sidebar-avatar">U</div>
+    <div class="sidebar-user-info">
+      <div class="name" id="sidebar-user-name">Usuário</div>
+      <div class="role" id="sidebar-user-role">Membro</div>
+    </div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-group-label">Principal</div>
+    <a href="dashboard.html" class="nav-item " data-page="dashboard.html"><span class="icon">🏠</span> Dashboard</a>
+<a href="marketplace.html" class="nav-item " data-page="marketplace.html"><span class="icon">🛒</span> Marketplace</a>
+<a href="cadastrar-produto.html" class="nav-item " data-page="cadastrar-produto.html"><span class="icon">➕</span> Cadastrar Produto</a>
+<a href="mapa.html" class="nav-item active" data-page="mapa.html"><span class="icon">🗺️</span> Pontos de Coleta</a>
+<a href="conta.html" class="nav-item " data-page="conta.html"><span class="icon">👤</span> Minha Conta</a>
+  </nav>
+  <div class="sidebar-footer">
+    <button class="btn btn-ghost w-full logout-btn" style="justify-content:flex-start;gap:10px;color:var(--gray-400)">🚪 Sair da conta</button>
+  </div>
+</aside>
+<div class="overlay" id="sidebar-overlay"></div>
+<main class="main-content">
+<div class="top-bar">
+  <div style="display:flex;align-items:center;gap:16px">
+    <button class="mobile-menu-btn" id="sidebar-toggle"><span></span><span></span><span></span></button>
+    <h2 style="font-size:1.1rem;font-weight:700">Pontos de Coleta</h2>
+  </div>
+  <div class="top-bar-right"></div>
+</div>
+  <div class="page-content">
+    <div class="page-header">
+      <h1>Pontos de Coleta Reais</h1>
+      <p>Cadastre pontos reais de coleta e entrega. Eles ficam salvos no PostgreSQL.</p>
+    </div>
+
+    <div class="grid-2 responsive-two">
+      <div class="card">
+        <div class="card-body">
+          <h3>Cadastrar ponto</h3>
+          <div id="point-error" class="form-error" style="display:none"></div>
+
+          <div class="form-group">
+            <label class="form-label">Nome do ponto *</label>
+            <input id="point-name" class="form-control" placeholder="Ex: Ecoponto CPA" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Endereço *</label>
+            <input id="point-address" class="form-control" placeholder="Rua, número, bairro" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Cidade *</label>
+            <input id="point-city" class="form-control" placeholder="Ex: Cuiabá - MT" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Materiais aceitos *</label>
+            <input id="point-materials" class="form-control" placeholder="Papelão, plástico, alumínio..." />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">WhatsApp do ponto</label>
+            <input id="point-phone" class="form-control" placeholder="65999999999" />
+          </div>
+
+          <button class="btn btn-primary w-full" onclick="submitPoint()">Salvar ponto</button>
+        </div>
+      </div>
+
+      <div>
+        <div id="points-list" class="points-list"></div>
+      </div>
+    </div>
+  </div>
+</main>
+</div>
+
+<script src="app.js"></script>
+<script>
+  DC.initSidebar();
+
+  async function loadPoints() {
+    const list = document.getElementById("points-list");
+    try {
+      const points = await DC.loadCollectionPoints();
+
+      if (!points.length) {
+        list.innerHTML = `<div class="empty-state"><div class="icon">📍</div><h3>Nenhum ponto cadastrado</h3><p>Cadastre o primeiro ponto real.</p></div>`;
+        return;
+      }
+
+      list.innerHTML = points.map(p => `
+        <div class="card mb-16">
+          <div class="card-body">
+            <h3>${p.name}</h3>
+            <p class="text-gray">📍 ${p.address}</p>
+            <p class="text-gray">🏙️ ${p.city}</p>
+            <p style="margin-top:8px"><strong>Materiais:</strong> ${p.materials}</p>
+            ${p.phone ? `<button class="btn btn-primary btn-sm mt-16" onclick="DC.openWhatsApp('${p.phone}','Ponto de coleta ${p.name}')">💬 WhatsApp</button>` : ""}
+          </div>
+        </div>
+      `).join("");
+    } catch (err) {
+      list.innerHTML = `<div class="form-error">${err.message}</div>`;
+    }
+  }
+
+  async function submitPoint() {
+    const errorEl = document.getElementById("point-error");
+    errorEl.style.display = "none";
+
+    const payload = {
+      name: document.getElementById("point-name").value.trim(),
+      address: document.getElementById("point-address").value.trim(),
+      city: document.getElementById("point-city").value.trim(),
+      materials: document.getElementById("point-materials").value.trim(),
+      phone: document.getElementById("point-phone").value.trim(),
+    };
+
+    try {
+      await DC.createCollectionPoint(payload);
+      DC.showToast("Ponto cadastrado com sucesso!");
+      document.querySelectorAll("#point-name,#point-address,#point-city,#point-materials,#point-phone").forEach(i => i.value = "");
+      loadPoints();
+    } catch (err) {
+      errorEl.textContent = err.message;
+      errorEl.style.display = "block";
+    }
+  }
+
+  loadPoints();
+</script>
+</body>
+</html>

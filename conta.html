@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Minha Conta — Descarte Certo</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<div class="app-layout">
+<aside class="sidebar" id="app-sidebar">
+  <div class="sidebar-header"><div class="sidebar-logo">Descarte<span>Certo</span></div></div>
+  <div class="sidebar-user">
+    <div class="sidebar-avatar" id="sidebar-avatar">U</div>
+    <div class="sidebar-user-info">
+      <div class="name" id="sidebar-user-name">Usuário</div>
+      <div class="role" id="sidebar-user-role">Membro</div>
+    </div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-group-label">Principal</div>
+    <a href="dashboard.html" class="nav-item " data-page="dashboard.html"><span class="icon">🏠</span> Dashboard</a>
+<a href="marketplace.html" class="nav-item " data-page="marketplace.html"><span class="icon">🛒</span> Marketplace</a>
+<a href="cadastrar-produto.html" class="nav-item " data-page="cadastrar-produto.html"><span class="icon">➕</span> Cadastrar Produto</a>
+<a href="mapa.html" class="nav-item " data-page="mapa.html"><span class="icon">🗺️</span> Pontos de Coleta</a>
+<a href="conta.html" class="nav-item active" data-page="conta.html"><span class="icon">👤</span> Minha Conta</a>
+  </nav>
+  <div class="sidebar-footer">
+    <button class="btn btn-ghost w-full logout-btn" style="justify-content:flex-start;gap:10px;color:var(--gray-400)">🚪 Sair da conta</button>
+  </div>
+</aside>
+<div class="overlay" id="sidebar-overlay"></div>
+<main class="main-content">
+<div class="top-bar">
+  <div style="display:flex;align-items:center;gap:16px">
+    <button class="mobile-menu-btn" id="sidebar-toggle"><span></span><span></span><span></span></button>
+    <h2 style="font-size:1.1rem;font-weight:700">Minha Conta</h2>
+  </div>
+  <div class="top-bar-right"></div>
+</div>
+  <div class="page-content">
+    <div class="page-header">
+      <h1>Minha Conta</h1>
+      <p>Dados usados para contato nos anúncios.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-body">
+        <div class="account-info">
+          <div class="profile-avatar-large" id="profile-avatar">U</div>
+          <div>
+            <h2 id="profile-name">Usuário</h2>
+            <p id="profile-email" class="text-gray"></p>
+            <p id="profile-phone" class="text-gray"></p>
+          </div>
+        </div>
+
+        <div style="margin-top:24px">
+          <button class="btn btn-danger logout-btn">Sair da conta</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+</div>
+
+<script src="app.js"></script>
+<script>
+  DC.initSidebar();
+
+  async function loadAccount() {
+    const user = await DC.loadMe();
+    document.getElementById("profile-avatar").textContent = (user.name || "U").charAt(0).toUpperCase();
+    document.getElementById("profile-name").textContent = user.name;
+    document.getElementById("profile-email").textContent = "E-mail: " + user.email;
+    document.getElementById("profile-phone").textContent = "WhatsApp: " + (user.phone || "Não informado");
+  }
+
+  loadAccount().catch(console.error);
+</script>
+</body>
+</html>

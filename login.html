@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Entrar — Descarte Certo</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<div class="auth-page">
+  <div class="auth-left">
+    <div class="auth-left-content">
+      <a href="index.html" style="display:inline-flex;align-items:center;gap:8px;margin-bottom:40px;color:var(--green-400);font-weight:600;font-size:0.9rem">← Voltar ao site</a>
+      <h1>Recicle.<br><span>Lucre.</span><br>Impacte.</h1>
+      <p>A plataforma que conecta quem tem materiais recicláveis a quem precisa deles. Sustentabilidade que gera renda real.</p>
+      <div class="auth-features">
+        <div class="auth-feature"><div class="icon">📦</div><p>Anuncie materiais recicláveis</p></div>
+        <div class="auth-feature"><div class="icon">💬</div><p>Contato direto pelo WhatsApp</p></div>
+        <div class="auth-feature"><div class="icon">🗺️</div><p>Pontos de coleta reais</p></div>
+        <div class="auth-feature"><div class="icon">💰</div><p>Negocie diretamente</p></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="auth-right">
+    <div class="auth-form-wrap">
+      <div class="auth-logo">
+        <a href="index.html" style="font-family:var(--font-display);font-size:1.5rem;font-weight:800;color:var(--dark-900)">
+          Descarte<span style="color:var(--green-500)">Certo</span>
+        </a>
+      </div>
+
+      <div class="auth-tabs">
+        <button type="button" class="auth-tab active" id="tab-login" onclick="switchTab('login')">Entrar</button>
+        <button type="button" class="auth-tab" id="tab-cadastro" onclick="switchTab('cadastro')">Criar conta</button>
+      </div>
+
+      <div id="form-login">
+        <h2>Bem-vindo de volta!</h2>
+        <p class="subtitle">Entre com sua conta</p>
+        <div id="login-error" class="form-error" style="display:none"></div>
+
+        <div class="form-group">
+          <label class="form-label">E-mail</label>
+          <input type="email" id="login-email" class="form-control" placeholder="seu@email.com" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Senha</label>
+          <input type="password" id="login-password" class="form-control" placeholder="••••••••" />
+        </div>
+
+        <button type="button" class="btn btn-primary w-full btn-lg" onclick="DC.handleLogin()">Entrar na plataforma</button>
+      </div>
+
+      <div id="form-cadastro" style="display:none">
+        <h2>Crie sua conta</h2>
+        <p class="subtitle">Cadastre-se para anunciar e negociar</p>
+        <div id="cadastro-error" class="form-error" style="display:none"></div>
+
+        <div class="form-group">
+          <label class="form-label">Nome completo</label>
+          <input type="text" id="cad-name" class="form-control" placeholder="Seu nome" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">E-mail</label>
+          <input type="email" id="cad-email" class="form-control" placeholder="seu@email.com" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">WhatsApp com DDD</label>
+          <input type="tel" id="cad-phone" class="form-control" placeholder="Ex: 65999999999" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Senha</label>
+          <input type="password" id="cad-password" class="form-control" placeholder="Mínimo 6 caracteres" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Confirmar senha</label>
+          <input type="password" id="cad-password2" class="form-control" placeholder="Repita a senha" />
+        </div>
+
+        <div style="margin-bottom:20px">
+          <label style="display:flex;gap:10px;align-items:flex-start;font-size:0.875rem;color:var(--gray-600);cursor:pointer">
+            <input type="checkbox" id="cad-terms" style="margin-top:3px;accent-color:var(--green-500)" />
+            Concordo com os Termos de Uso e Política de Privacidade
+          </label>
+        </div>
+
+        <button type="button" class="btn btn-primary w-full btn-lg" onclick="DC.handleRegister()">Criar conta grátis</button>
+      </div>
+
+      <p class="auth-switch" id="auth-switch-text">
+        Não tem conta? <a href="#" onclick="switchTab('cadastro');return false">Criar conta grátis</a>
+      </p>
+    </div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+<script>
+  function switchTab(tab) {
+    const isLogin = tab === "login";
+    document.getElementById("tab-login").classList.toggle("active", isLogin);
+    document.getElementById("tab-cadastro").classList.toggle("active", !isLogin);
+    document.getElementById("form-login").style.display = isLogin ? "block" : "none";
+    document.getElementById("form-cadastro").style.display = isLogin ? "none" : "block";
+
+    document.getElementById("auth-switch-text").innerHTML = isLogin
+      ? `Não tem conta? <a href="#" onclick="switchTab('cadastro');return false">Criar conta grátis</a>`
+      : `Já tem conta? <a href="#" onclick="switchTab('login');return false">Entrar</a>`;
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    if (localStorage.getItem("dc_user")) {
+      window.location.href = "dashboard.html";
+      return;
+    }
+
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get("tab") === "cadastro") switchTab("cadastro");
+  });
+</script>
+</body>
+</html>

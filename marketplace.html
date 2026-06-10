@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Marketplace — Descarte Certo</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<div class="app-layout">
+<aside class="sidebar" id="app-sidebar">
+  <div class="sidebar-header"><div class="sidebar-logo">Descarte<span>Certo</span></div></div>
+  <div class="sidebar-user">
+    <div class="sidebar-avatar" id="sidebar-avatar">U</div>
+    <div class="sidebar-user-info">
+      <div class="name" id="sidebar-user-name">Usuário</div>
+      <div class="role" id="sidebar-user-role">Membro</div>
+    </div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-group-label">Principal</div>
+    <a href="dashboard.html" class="nav-item " data-page="dashboard.html"><span class="icon">🏠</span> Dashboard</a>
+<a href="marketplace.html" class="nav-item active" data-page="marketplace.html"><span class="icon">🛒</span> Marketplace</a>
+<a href="cadastrar-produto.html" class="nav-item " data-page="cadastrar-produto.html"><span class="icon">➕</span> Cadastrar Produto</a>
+<a href="mapa.html" class="nav-item " data-page="mapa.html"><span class="icon">🗺️</span> Pontos de Coleta</a>
+<a href="conta.html" class="nav-item " data-page="conta.html"><span class="icon">👤</span> Minha Conta</a>
+  </nav>
+  <div class="sidebar-footer">
+    <button class="btn btn-ghost w-full logout-btn" style="justify-content:flex-start;gap:10px;color:var(--gray-400)">🚪 Sair da conta</button>
+  </div>
+</aside>
+<div class="overlay" id="sidebar-overlay"></div>
+<main class="main-content">
+<div class="top-bar">
+  <div style="display:flex;align-items:center;gap:16px">
+    <button class="mobile-menu-btn" id="sidebar-toggle"><span></span><span></span><span></span></button>
+    <h2 style="font-size:1.1rem;font-weight:700">Marketplace</h2>
+  </div>
+  <div class="top-bar-right"><a href="cadastrar-produto.html" class="btn btn-primary btn-sm">+ Cadastrar produto</a></div>
+</div>
+  <div class="page-content">
+    <div class="page-header">
+      <h1>Marketplace de Recicláveis</h1>
+      <p>Apenas produtos reais cadastrados pelos usuários.</p>
+    </div>
+
+    <div class="market-toolbar">
+      <div class="market-search">
+        <span>🔍</span>
+        <input type="text" id="search-input" placeholder="Buscar por nome, material ou cidade..." oninput="filterProducts()" />
+      </div>
+      <select class="form-control" id="sort-select" onchange="filterProducts()" style="padding:8px 36px 8px 12px;min-width:160px">
+        <option value="recent">Mais recentes</option>
+        <option value="price-asc">Menor preço</option>
+        <option value="price-desc">Maior preço</option>
+      </select>
+    </div>
+
+    <div class="filter-chips mb-24">
+      <button class="chip active" onclick="setCategory('all',this)">Todos</button>
+      <button class="chip" onclick="setCategory('papelao',this)">📦 Papelão</button>
+      <button class="chip" onclick="setCategory('aluminio',this)">🥤 Alumínio</button>
+      <button class="chip" onclick="setCategory('plastico',this)">♻️ Plástico</button>
+      <button class="chip" onclick="setCategory('vidro',this)">🍶 Vidro</button>
+      <button class="chip" onclick="setCategory('ferro',this)">⚙️ Ferro</button>
+      <button class="chip" onclick="setCategory('cobre',this)">🔌 Cobre</button>
+      <button class="chip" onclick="setCategory('oleo',this)">🛢️ Óleo</button>
+    </div>
+
+    <p id="results-count" style="font-size:0.875rem;color:var(--gray-500);margin-bottom:20px"></p>
+    <div class="product-grid" id="product-grid"></div>
+  </div>
+</main>
+</div>
+
+<script src="app.js"></script>
+<script>
+  DC.initSidebar();
+
+  let activeCategory = "all";
+  let allProducts = [];
+
+  async function loadPageProducts() {
+    try {
+      allProducts = await DC.loadProducts();
+      filterProducts();
+    } catch (err) {
+      document.getElementById("product-grid").innerHTML = `<div class="empty-state" style="grid-column:1/-1"><h3>Erro ao carregar produtos</h3><p>${err.message}</p></div>`;
+    }
+  }
+
+  function setCategory(cat, el) {
+    activeCategory = cat;
+    document.querySelectorAll(".chip").forEach(c => c.classList.remove("active"));
+    el.classList.add("active");
+    filterProducts();
+  }
+
+  function filterProducts() {
+    let products = [...allProducts];
+    const search = document.getElementById("search-input").value.toLowerCase();
+    const sort = document.getElementById("sort-select").value;
+
+    if (activeCategory !== "all") products = products.filter(p => p.category === activeCategory);
+
+    if (search) {
+      products = products.filter(p =>
+        (p.name || "").toLowerCase().includes(search) ||
+        (p.city || "").toLowerCase().includes(search) ||
+        (p.categoryLabel || "").toLowerCase().includes(search)
+      );
+    }
+
+    if (sort === "price-asc") products.sort((a, b) => Number(a.price) - Number(b.price));
+    if (sort === "price-desc") products.sort((a, b) => Number(b.price) - Number(a.price));
+
+    renderProducts(products);
+  }
+
+  function renderProducts(products) {
+    const grid = document.getElementById("product-grid");
+    const countEl = document.getElementById("results-count");
+
+    countEl.textContent = `${products.length} produto${products.length !== 1 ? "s" : ""} encontrado${products.length !== 1 ? "s" : ""}`;
+
+    if (!products.length) {
+      grid.innerHTML = `
+        <div class="empty-state" style="grid-column:1/-1">
+          <div class="icon">🛒</div>
+          <h3>Nenhum produto cadastrado</h3>
+          <p>Cadastre o primeiro produto real para aparecer aqui.</p>
+          <a href="cadastrar-produto.html" class="btn btn-primary mt-16">Cadastrar produto</a>
+        </div>`;
+      return;
+    }
+
+    const favs = DC.Storage.getFavorites();
+
+    grid.innerHTML = products.map(p => {
+      const emoji = DC.getCategoryEmoji(p.category);
+      const isFav = favs.includes(p.id);
+      const imgHtml = p.image
+        ? `<img src="${p.image}" alt="${p.name}" onerror="this.parentElement.innerHTML='<span style=font-size:4rem>${emoji}</span>'" />`
+        : `<span style="font-size:4rem">${emoji}</span>`;
+
+      const safeName = String(p.name || "").replace(/'/g, "\\'");
+      const safePhone = String(p.sellerPhone || "").replace(/'/g, "");
+
+      return `
+        <div class="product-card fade-up">
+          <div class="product-card-img">
+            ${imgHtml}
+            <button class="product-fav ${isFav ? "liked" : ""}" onclick="toggleFav('${p.id}',this)" title="Favoritar">
+              ${isFav ? "❤️" : "🤍"}
+            </button>
+          </div>
+
+          <div class="product-card-body">
+            <span class="cat-badge">${DC.getCategoryLabel(p.category)}</span>
+            <h3>${p.name}</h3>
+            <div class="location">📍 ${p.city || "Localização não informada"}</div>
+            ${p.description ? `<p style="font-size:0.82rem;color:var(--gray-500);margin-top:8px;line-height:1.5">${p.description.substring(0, 90)}${p.description.length > 90 ? "..." : ""}</p>` : ""}
+          </div>
+
+          <div class="product-card-footer">
+            <div>
+              <div class="product-price">${DC.formatPrice(p.price)}<small>/${p.unit || "kg"}</small></div>
+              <div style="font-size:0.78rem;color:var(--gray-400);margin-top:2px">${p.qty} ${p.unit || "kg"} disponíveis</div>
+            </div>
+
+            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px">
+              <div class="seller-mini">
+                <div class="av">${(p.seller || "V").charAt(0).toUpperCase()}</div>
+                <span>${p.seller || "Vendedor"}</span>
+              </div>
+              <button class="btn btn-primary btn-sm" onclick="DC.openWhatsApp('${safePhone}','${safeName}')">💬 WhatsApp</button>
+            </div>
+          </div>
+        </div>`;
+    }).join("");
+  }
+
+  function toggleFav(id, btn) {
+    const added = DC.toggleFavorite(id);
+    btn.textContent = added ? "❤️" : "🤍";
+    btn.classList.toggle("liked", added);
+  }
+
+  loadPageProducts();
+</script>
+</body>
+</html>
